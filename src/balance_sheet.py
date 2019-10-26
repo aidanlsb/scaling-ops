@@ -1,7 +1,5 @@
 """Classes used to construct the balance sheet"""
-
-from item import Item
-from typing import List
+from src.data import original_assets, original_liabilities, original_equity
 
 # Assets
 class CurrentAssets:
@@ -108,7 +106,7 @@ class CurrentLiabilities:
         self.accruals = accruals
         self.accrued_income_tax = accrued_income_tax
         self.deferred_income = deferred_income
-        self.financial_instruments
+        self.financial_instruments = financial_instruments
 
     def total(self) -> float:
         return sum(
@@ -140,49 +138,65 @@ class Liabilities:
     def total(self) -> float:
         return self.current_liabilities.total() + self.long_term_debt.total()
 
+
 # Equity
 class Equity:
     def __init__(
-        self,
-        retained_earnings: float,
-        reserves: float,
-        intercompany: float
+        self, retained_earnings: float, reserves: float, intercompany: float
     ) -> None:
+        self.retained_earnings = retained_earnings
+        self.reserves = reserves
+        self.intercompany = intercompany
+
     def total(self) -> float:
-        return sum(
-            [
-                self.retained_earnings,
-                self.reserves,
-                self.intercompany,
-            ]
-        )
+        return sum([self.retained_earnings, self.reserves, self.intercompany])
+
 
 class BalanceSheet:
-    def __init__(self, assets: Assets, liabilities: Liabilities, equity: Equity) -> None:
+    def __init__(
+        self, assets: Assets, liabilities: Liabilities, equity: Equity
+    ) -> None:
         self.assets = assets
         self.liabilities = liabilities
         self.equity = equity
-    
+
     def balance(self) -> bool:
         """Assets equals liabilities plus equity (within a dollar)"""
-        return abs(round(self.assets.total()) - round((self.liabilities.total() + self.equity.total()))) <= 1
+        return abs(
+            round(self.assets.total())
+            - round((self.liabilities.total() + self.equity.total()))
+        )
 
     def invested_capital(self) -> float:
         return (
-            self.assets.current_assets.total() - 
-            self.liabilities.current_liabilities.total() + 
-            self.assets.fixed_assets.total() + 
-            self.assets.intangible_assets.total() - 
-            self.assets.current_assets.cash
+            self.assets.current_assets.total()
+            - self.liabilities.current_liabilities.total()
+            + self.assets.fixed_assets.total()
+            + self.assets.intangible_assets.total()
+            - self.assets.current_assets.cash
         )
 
 
+def construct_balance_sheet() -> BalanceSheet:
+    # data
+    data_ca, data_fa, data_ia = original_assets()
+    data_cl, data_ltd = original_liabilities()
+    data_eq = original_equity()
 
-
-if __name__ == "__main__":
-    ca = CurrentAssets(**CURRENT_ASSETS)
-    fa = FixedAssets(**FIXED_ASSETS)
-    ia = IntangibleAssets(**INTANGIBLE_ASSETS)
-
+    # Assets
+    ca = CurrentAssets(**data_ca)
+    fa = FixedAssets(**data_fa)
+    ia = IntangibleAssets(**data_ia)
     assets = Assets(ca, fa, ia)
-    print(assets.current_assets.total())
+
+    # Liabilities
+    cl = CurrentLiabilities(**data_cl)
+    ltd = LongTermDebt(**data_ltd)
+    liabilities = Liabilities(cl, ltd)
+
+    # Equity
+    equity = Equity(**data_eq)
+
+    # Assemble
+    balance_sheet = BalanceSheet(assets, liabilities, equity)
+    return balance_sheet
