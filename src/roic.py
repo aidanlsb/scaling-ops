@@ -19,16 +19,16 @@ class Model:
         invested_capital = self.balance_sheet.invested_capital()
         return nopat / invested_capital
 
-    def total_labor_cost(self) -> float:
-        """
-        total labor cost for waste collection is cost per shift * number of shifts in a year
-        number of shifts in a year is assumed to be number of trucks * days worked in a year
-        """
+    def revenue_per_lift(self) -> float:
         return (
-            self.operations.productivity.avg_num_trucks
-            * self.operations.productivity.working_days_per_year
-            * self.operations.labor.cost_per_shift()
+            self.income_statement.revenue.operating_revenue
+            / self.operations.productivity.total_lifts
         )
+
+    """Need to complete"""
+
+    def cost_per_lift(self) -> float:
+        return
 
 
 def construct_model() -> Model:

@@ -56,6 +56,14 @@ class Operations:
         self.truck = truck
         self.labor = labor
 
+    def total_shifts(self) -> float:
+        return (
+            self.productivity.working_days_per_year * self.productivity.avg_num_trucks
+        )
+
+    def lifts_per_shift(self) -> float:
+        return self.productivity.total_lifts / self.total_shifts()
+
 
 def construct_operations() -> Operations:
     # data
