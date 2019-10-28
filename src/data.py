@@ -69,7 +69,7 @@ def original_expenses() -> Tuple[Dict, Dict]:
     opex = {
         "labor_subcontract": 5988550.3346616,
         "disposal": 6485195.3164922,
-        "other_op": 11788263.327227,
+        "other_opex": 11788263.327227,
         "sga": 2540439.5069915,
         "other_inc_exp": -320642.23237,
         "management_fees": 1536074.53672,
