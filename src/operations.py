@@ -11,6 +11,7 @@ class Productivity:
         total_tonnes_disposed: float,
         working_days_per_year: int,
         num_customers: int,
+        avg_density: float,
     ) -> None:
         self.avg_num_trucks = avg_num_trucks
         self.total_lifts = total_lifts
@@ -19,12 +20,22 @@ class Productivity:
         self.total_tonnes_disposed = total_tonnes_disposed
         self.working_days_per_year = working_days_per_year
         self.num_customers = num_customers
-
-    def avg_density(self) -> float:
-        return self.total_tonnes_disposed / self.total_m3_collected
+        self.avg_density = avg_density
 
     def lifts_per_truck(self) -> float:
         return self.total_lifts / self.avg_num_trucks
+
+    def total_shifts(self, shifts_per_day=1) -> float:
+        return self.working_days_per_year * self.avg_num_trucks * shifts_per_day
+
+    def lifts_per_shift(self) -> float:
+        return self.total_lifts / self.total_shifts()
+
+    def m3_to_tonnes(self) -> float:
+        return self.total_m3_collected * self.avg_density
+
+    def m3_per_lift(self) -> float:
+        return self.total_m3_collected / self.total_lifts
 
 
 class Truck:
@@ -56,13 +67,29 @@ class Operations:
         self.truck = truck
         self.labor = labor
 
-    def total_shifts(self) -> float:
+    def driver_labor_cost(self) -> float:
         return (
-            self.productivity.working_days_per_year * self.productivity.avg_num_trucks
+            self.labor.cost_per_shift()
+            * self.productivity.avg_num_trucks
+            * self.productivity.working_days_per_year
         )
 
-    def lifts_per_shift(self) -> float:
-        return self.productivity.total_lifts / self.total_shifts()
+    def total_fuel_cost(self) -> float:
+        liters = self.productivity.avg_km_per_truck_per_year / self.truck.fuel_econ_km_l
+        return liters * self.truck.fuel_cost_per_l
+
+    def total_maintenance_cost(self) -> float:
+        return (
+            self.truck.maintenance_per_truck_per_year * self.productivity.avg_num_trucks
+        )
+
+    def capacity_utilization(self) -> float:
+        total_capacity = (
+            self.truck.capacity
+            * self.productivity.avg_num_trucks
+            * self.productivity.working_days_per_year
+        )
+        return self.productivity.total_m3_collected / total_capacity
 
 
 def construct_operations() -> Operations:

@@ -14,7 +14,7 @@ class OpEx:
         self,
         labor_subcontract: float,
         disposal: float,
-        other_op: float,
+        other_opex: float,
         sga: float,
         other_inc_exp: float,
         management_fees: float,
@@ -22,7 +22,7 @@ class OpEx:
     ) -> None:
         self.labor_subcontract = labor_subcontract
         self.disposal = disposal
-        self.other_op = other_op
+        self.other_opex = other_opex
         self.sga = sga
         self.other_inc_exp = other_inc_exp
         self.management_fees = management_fees
@@ -33,7 +33,7 @@ class OpEx:
             [
                 self.labor_subcontract,
                 self.disposal,
-                self.other_op,
+                self.other_opex,
                 self.sga,
                 self.other_inc_exp,
                 self.management_fees,

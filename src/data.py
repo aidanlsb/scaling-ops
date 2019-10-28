@@ -90,6 +90,7 @@ def original_operations() -> Tuple[Dict, Dict, Dict]:
         "total_tonnes_disposed": 97928,
         "working_days_per_year": 330,
         "num_customers": 22519,
+        "avg_density": 0.0907767756622898,
     }
 
     truck = {
