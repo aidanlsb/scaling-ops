@@ -1,3 +1,4 @@
+import pandas as pd
 from typing import Tuple
 
 from src.income_statement import IncomeStatement, construct_income_statement
@@ -40,45 +41,55 @@ class Model:
         return num_cust, lifts_per_cust, m3_per_lift, revenue_per_m3
 
     def decompose_opex(self) -> Tuple[float]:
+        """Get to cost-per-lift that depends on lifts-per-shift"""
 
-        # labor
-        labor_exp = self.income_statement.opex.labor_subcontract
-        driver_labor_exp = self.operations.driver_labor_cost()
-        other_labor_exp = labor_exp - driver_labor_exp
+        # labor cost per lift is driver labor + other (dispatch, management, etc.)
+        driver_labor_cost_per_shift = self.operations.labor.cost_per_shift()
+
+        other_labor_cost_per_shift = (
+            self.income_statement.opex.labor_subcontract
+            / self.operations.productivity.total_shifts()
+            - driver_labor_cost_per_shift
+        )
 
         # other operating
-        other_opex = self.income_statement.opex.other_opex
-
-        fuel_cost = self.operations.total_fuel_cost()
-        maintenance = self.operations.total_maintenance_cost()
-
-        remaining_other_opex = other_opex - (fuel_cost + maintenance)
-        # depreciation
-
-        return remaining_other_opex, fuel_cost, maintenance
-
-    def disposal_per_lift(self) -> float:
-        return (
-            self.income_statement.opex.disposal
-            / self.operations.productivity.total_lifts
+        fuel_cost_per_shift = self.operations.fuel_cost_per_shift()
+        maintenance_per_shift = self.operations.maintenance_cost_per_shift()
+        other_opex_per_shift = (
+            self.income_statement.opex.other_opex
+            / self.operations.productivity.total_shifts()
+            - fuel_cost_per_shift
+            - maintenance_per_shift_per_shift
         )
 
-    def revenue_per_m3(self) -> float:
-        return (
-            self.income_statement.revenue.operating_revenue
-            / self.operations.productivity.total_m3_collected
-        )
+        # lifts per shift
+        lifts_per_shift = self.operations.productivity.lifts_per_shift()
 
-    def disposal_cost_per_tonne(self) -> float:
-        return (
+        driver_labor_cost_per_lift = driver_labor_cost_per_shift / lifts_per_shift
+        other_labor_cost_per_lift = other_labor_cost_per_shift / lifts_per_shift
+        fuel_cost_per_lift = fuel_cost_per_shift / lifts_per_shift
+        maintenance_per_lift = maintenance_per_shift / lifts_per_shift
+        other_opex_per_lift = other_labor_cost_per_shift / lifts_per_shift
+
+        # disposal
+        disposal_cost_per_tonne = (
             self.income_statement.opex.disposal
             / self.operations.productivity.total_tonnes_disposed
         )
+        disposal_cost_per_m3 = (
+            disposal_cost_per_tonne / self.operations.productivity.avg_density
+        )
+        disposal_cost_per_lift = (
+            disposal_cost_per_m3 * self.operations.productivity.m3_per_lift()
+        )
 
-    def revenue_per_tonne(self) -> float:
         return (
-            self.income_statement.revenue.operating_revenue
-            / self.operations.productivity.total_tonnes_disposed
+            driver_labor_cost_per_lift,
+            other_labor_cost_per_lift,
+            fuel_cost_per_lift,
+            maintenance_per_lift,
+            other_opex_per_lift,
+            disposal_cost_per_lift,
         )
 
 

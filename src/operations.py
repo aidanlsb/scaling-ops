@@ -67,20 +67,18 @@ class Operations:
         self.truck = truck
         self.labor = labor
 
-    def driver_labor_cost(self) -> float:
-        return (
-            self.labor.cost_per_shift()
-            * self.productivity.avg_num_trucks
-            * self.productivity.working_days_per_year
+    def fuel_cost_per_shift(self) -> float:
+        km_per_day = (
+            self.productivity.avg_km_per_truck_per_year
+            / self.productivity.working_days_per_year
         )
+        liters_per_day = km_per_day / self.truck.fuel_econ_km_l
+        return liters_per_day * self.truck.fuel_cost_per_l
 
-    def total_fuel_cost(self) -> float:
-        liters = self.productivity.avg_km_per_truck_per_year / self.truck.fuel_econ_km_l
-        return liters * self.truck.fuel_cost_per_l
-
-    def total_maintenance_cost(self) -> float:
+    def maintenance_cost_per_shift(self) -> float:
         return (
-            self.truck.maintenance_per_truck_per_year * self.productivity.avg_num_trucks
+            self.truck.maintenance_per_truck_per_year
+            / self.productivity.working_days_per_year
         )
 
     def capacity_utilization(self) -> float:
