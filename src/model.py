@@ -59,7 +59,7 @@ class Model:
             self.income_statement.opex.other_opex
             / self.operations.productivity.total_shifts()
             - fuel_cost_per_shift
-            - maintenance_per_shift_per_shift
+            - maintenance_per_shift
         )
 
         # lifts per shift
@@ -69,7 +69,7 @@ class Model:
         other_labor_cost_per_lift = other_labor_cost_per_shift / lifts_per_shift
         fuel_cost_per_lift = fuel_cost_per_shift / lifts_per_shift
         maintenance_per_lift = maintenance_per_shift / lifts_per_shift
-        other_opex_per_lift = other_labor_cost_per_shift / lifts_per_shift
+        other_opex_per_lift = other_opex_per_shift / lifts_per_shift
 
         # disposal
         disposal_cost_per_tonne = (
@@ -77,7 +77,7 @@ class Model:
             / self.operations.productivity.total_tonnes_disposed
         )
         disposal_cost_per_m3 = (
-            disposal_cost_per_tonne / self.operations.productivity.avg_density
+            disposal_cost_per_tonne * self.operations.productivity.avg_density
         )
         disposal_cost_per_lift = (
             disposal_cost_per_m3 * self.operations.productivity.m3_per_lift()
