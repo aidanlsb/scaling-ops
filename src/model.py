@@ -1,47 +1,48 @@
 import pandas as pd
 from typing import Tuple
 
-from src.income_statement import IncomeStatement, construct_income_statement
-from src.balance_sheet import BalanceSheet, construct_balance_sheet
-from src.operations import Operations, construct_operations
+from src.income_statement import IncomeStatement
+from src.balance_sheet import BalanceSheet
+from src.operations import Operations
 
 
 class Model:
     def __init__(
         self,
-        income_statement: IncomeStatement,
-        balance_sheet: BalanceSheet,
-        operations: Operations,
     ) -> None:
-        self.income_statement = income_statement
-        self.balance_sheet = balance_sheet
-        self.operations = operations
+        self.income_statement = IncomeStatement()
+        self.balance_sheet = BalanceSheet()
+        self.operations = Operations()
+
+        # Drivers - Revenue Side
+
+        # Drivers - Cost side
+        self.
 
     def roic(self) -> float:
-        nopat = self.income_statement.nopat()
-        invested_capital = self.balance_sheet.invested_capital()
-        return nopat / invested_capital
+        return self.income_statement.nopat() / self.balance_sheet.invested_capital()
 
     def decompose_revenue(self) -> Tuple[float]:
         """Break out revenue into drivers"""
-
         # rev = P*Q
-        revenue_per_m3 = self.revenue_per_m3()
-        total_m3_collected = self.operations.productivity.total_m3_collected
+        rev_per_m3 = (
+            self.income_statement.revenue.operating_revenue
+            / self.operations.productivity.total_m3_collected
+        )
 
-        # Q = # lifts * Q/lift
-        num_lifts = self.operations.productivity.total_lifts
-        m3_per_lift = self.operations.productivity.m3_per_lift()
-
-        # Number of lifts = # customers * lifts/customer
-        num_cust = self.operations.productivity.num_customers
-        lifts_per_cust = num_lifts / num_cust
+        # Q = # customers * M3/customers
+        m3_per_cust = (
+            self.operations.productivity.total_m3_collected
+            / self.operations.productivity.num_customers
+        )
 
         # return the drivers
-        return num_cust, lifts_per_cust, m3_per_lift, revenue_per_m3
+        return rev_per_m3, m3_per_cust
 
     def decompose_opex(self) -> Tuple[float]:
         """Get to cost-per-lift that depends on lifts-per-shift"""
+
+        # start with total demand
 
         # labor cost per lift is driver labor + other (dispatch, management, etc.)
         driver_labor_cost_per_shift = self.operations.labor.cost_per_shift()
@@ -76,20 +77,26 @@ class Model:
             self.income_statement.opex.disposal
             / self.operations.productivity.total_tonnes_disposed
         )
-        disposal_cost_per_m3 = (
-            disposal_cost_per_tonne * self.operations.productivity.avg_density
+        tonnes_per_lift = (
+            self.operations.productivity.total_tonnes_disposed
+            / self.operations.productivity.total_lifts
         )
-        disposal_cost_per_lift = (
-            disposal_cost_per_m3 * self.operations.productivity.m3_per_lift()
-        )
+        avg_density = self.operations.productivity.avg_density
+        m3_per_lift = tonnes_per_lift / avg_density
+        customer_utilization = self.operations.capacity_utilization()
+        m3_serviced_per_lift = m3_per_lift / customer_utilization
 
         return (
+            lifts_per_shift,
             driver_labor_cost_per_lift,
             other_labor_cost_per_lift,
             fuel_cost_per_lift,
             maintenance_per_lift,
             other_opex_per_lift,
-            disposal_cost_per_lift,
+            disposal_cost_per_tonne,
+            avg_density,
+            customer_utilization,
+            m3_serviced_per_lift,
         )
 
 

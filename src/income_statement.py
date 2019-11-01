@@ -1,80 +1,56 @@
-from src.data import original_revenue, original_expenses
-
-
-class Revenue:
-    def __init__(self, operating_revenue: float) -> None:
-        self.operating_revenue = operating_revenue
-
-    def total(self) -> float:
-        return self.operating_revenue
-
-
-class OpEx:
-    def __init__(
-        self,
-        labor_subcontract: float,
-        disposal: float,
-        other_opex: float,
-        sga: float,
-        other_inc_exp: float,
-        management_fees: float,
-        non_rec_items: float,
-    ) -> None:
-        self.labor_subcontract = labor_subcontract
-        self.disposal = disposal
-        self.other_opex = other_opex
-        self.sga = sga
-        self.other_inc_exp = other_inc_exp
-        self.management_fees = management_fees
-        self.non_rec_items = non_rec_items
-
-    def total(self) -> float:
-        return sum(
-            [
-                self.labor_subcontract,
-                self.disposal,
-                self.other_opex,
-                self.sga,
-                self.other_inc_exp,
-                self.management_fees,
-                self.non_rec_items,
-            ]
-        )
-
-
-class DA:
-    def __init__(self, depreciation: float, amortization: float) -> None:
-        self.depreciation = depreciation
-        self.amortization = amortization
-
-    def total(self) -> float:
-        return self.depreciation + self.amortization
+from dataclasses import dataclass
 
 
 class IncomeStatement:
-    def __init__(self, revenue: Revenue, opex: OpEx, da: DA) -> None:
-        self.revenue = revenue
-        self.opex = opex
-        self.da = da
+    def __init__(self) -> None:
+        self.revenue = Revenue()
+        self.opex = OpEx()
+        self.da = DA()
+
+    def total_opex(self) -> float:
+        return sum(
+            [
+                self.opex.labor_subcontract,
+                self.opex.disposal,
+                self.opex.other_opex,
+                self.opex.sga,
+                self.opex.other_inc_exp,
+                self.opex.management_fees,
+                self.opex.non_rec_items,
+            ]
+        )
+
+    def total_da(self) -> float:
+        return sum([self.da.depreciation, self.da.amortization])
 
     def ebitda(self) -> float:
-        return self.revenue.total() - self.opex.total()
+        return self.revenue.operating_revenue - self.total_opex()
 
     def ebit(self) -> float:
-        return self.ebitda() - self.da.total()
+        return self.ebitda() - self.total_da()
 
     def nopat(self, tax_rate=0.21) -> float:
         return self.ebit() * (1 - tax_rate)
 
 
-def construct_income_statement() -> IncomeStatement:
-    data_rev = original_revenue()
-    data_opex, data_da = original_expenses()
+@dataclass
+class Revenue:
+    operating_revenue: float = 39778916.847903
 
-    rev = Revenue(**data_rev)
-    opex = OpEx(**data_opex)
-    da = DA(**data_da)
 
-    income_statement = IncomeStatement(rev, opex, da)
+@dataclass
+class OpEx:
+    labor_subcontract = 5988550.3346616
+    disposal = 6485195.3164922
+    other_opex = 11788263.327227
+    sga = 2540439.5069915
+    other_inc_exp = -320642.23237
+    management_fees = 1536074.53672
+    non_rec_items = 0
 
-    return income_statement
+
+@dataclass
+class DA:
+    depreciation = 4685375.9208466
+    amortization = 79591.293499997
+
