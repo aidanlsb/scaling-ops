@@ -55,7 +55,6 @@ class BalanceSheet:
         )
 
     def balance(self) -> bool:
-        """Assets equals liabilities plus equity (within a dollar)"""
         return abs(
             round(self.total_assets())
             - round((self.total_liabilities() + self.total_equity()))
@@ -69,42 +68,42 @@ class BalanceSheet:
 @dataclass
 class Assets:
     # Current assets
-    cash = 9.6432
-    accounts_receivable = 3021.78736
-    bad_debts_provision = -23.06192
-    properties_intended_for_sale = 0
-    other_receivables = 157.71968
-    prepayments = 88.10512
-    inventory = 36.29712
-    contract_costs_incurred = 0
-    financial_instruments = 0
-    short_term_investments = 0
+    cash = 9.6432 * 1000
+    accounts_receivable = 3021.78736 * 1000
+    bad_debts_provision = -23.06192 * 1000
+    properties_intended_for_sale = 0 * 1000
+    other_receivables = 157.71968 * 1000
+    prepayments = 88.10512 * 1000
+    inventory = 36.29712 * 1000
+    contract_costs_incurred = 0 * 1000
+    financial_instruments = 0 * 1000
+    short_term_investments = 0 * 1000
 
     # Fixed assets
-    fixed_assets_at_cost = 25283.98976
-    depreciation = -13039.2168
-    of_which_fleet = 2932.3288526946
-    of_which_pe = 6158.4905906587
-    of_which_other = 3152.9535166467
+    fixed_assets_at_cost = 25283.98976 * 1000
+    depreciation = -13039.2168 * 1000
+    of_which_fleet = 2932.3288526946 * 1000
+    of_which_pe = 6158.4905906587 * 1000
+    of_which_other = 3152.9535166467 * 1000
 
     # Intangible
-    goodwill = 15709.84464
-    amortization = -4924.30976
+    goodwill = 15709.84464 * 1000
+    amortization = -4924.30976 * 1000
 
 
 @dataclass
 class Liabilities:
-    trade_payables = 1278.88384
-    accruals = 375.64208
+    trade_payables = 1278.88384 * 1000
+    accruals = 375.64208 * 1000
     accrued_income_tax = 0
-    deferred_income = 2066.5976
+    deferred_income = 2066.5976 * 1000
     financial_instruments = 0
-    long_term_debt = 1200.52368
+    long_term_debt = 1200.52368 * 1000
 
 
 @dataclass
 class Equity:
-    retained_earnings = 55879.86976
+    retained_earnings = 55879.86976 * 1000
     reserves = 0
-    intercompany = -34488.62672
+    intercompany = -34488.62672 * 1000
 

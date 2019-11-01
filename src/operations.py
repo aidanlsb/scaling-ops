@@ -1,3 +1,4 @@
+import numpy as np
 from dataclasses import dataclass
 
 
@@ -7,8 +8,46 @@ class Operations:
         self.truck = Truck()
         self.labor = Labor()
 
-    def driver_cost_per_shift(self):
+    def lifts_per_truck_day(self) -> float:
+        return (
+            self.productivity.total_lifts
+            / self.productivity.working_days_per_year
+            / self.productivity.avg_num_trucks
+        )
+
+    def m3_per_customer(self) -> float:
+        return self.productivity.total_m3_collected / self.productivity.num_customers
+
+    def avg_vol_per_lift(self) -> float:
+        return self.productivity.total_m3_collected / self.productivity.total_lifts
+
+    def avg_tonnes_per_m3(self) -> float:
+        return (
+            self.productivity.total_tonnes_disposed
+            / self.productivity.total_m3_collected
+        )
+
+    def driver_cost_per_truck_day(self) -> float:
         return self.labor.driver_hourly_wage * self.labor.hours_per_shift
+
+    def fuel_cost_per_truck_day(self) -> float:
+        km_daily = (
+            self.productivity.avg_km_per_truck_per_year
+            / self.productivity.working_days_per_year
+        )
+        liters_daily = km_daily / self.truck.fuel_econ_km_l
+        return liters_daily * self.truck.fuel_cost_per_l
+
+    def maintenance_cost_per_truck_day(self) -> float:
+        cost_per_km = (
+            self.truck.maintenance_per_truck_per_year
+            / self.productivity.avg_km_per_truck_per_year
+        )
+        km_daily = (
+            self.productivity.avg_km_per_truck_per_year
+            / self.productivity.working_days_per_year
+        )
+        return cost_per_km * km_daily
 
 
 @dataclass
@@ -20,7 +59,6 @@ class Productivity:
     total_tonnes_disposed: float = 97928
     working_days_per_year: int = 330
     num_customers: int = 22519
-    avg_density: float = 0.0907767756622898
 
 
 @dataclass
