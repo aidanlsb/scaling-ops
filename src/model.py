@@ -19,13 +19,14 @@ class Inputs:
 
 class Model:
     def __init__(self) -> None:
+        # data provided
         self.income_statement = IncomeStatement()
         self.balance_sheet = BalanceSheet()
         self.operations = Operations()
-        self.inputs = Inputs()
 
-    def current_roic(self) -> float:
-        return self.income_statement.nopat() / self.balance_sheet.invested_capital()
+        # Separate container for levers
+        self.inputs = Inputs()
+        self.initialize_inputs()
 
     def initialize_inputs(self) -> None:
         """ These inputs are primary drivers of the model and possible levers for the business"""
@@ -36,6 +37,9 @@ class Model:
             / self.operations.productivity.total_m3_collected
         )
         self.inputs.num_customers = self.operations.productivity.num_customers
+
+    def current_roic(self) -> float:
+        return self.income_statement.nopat() / self.balance_sheet.invested_capital()
 
     def total_demand(self) -> float:
         return self.inputs.num_customers * self.operations.m3_per_customer()
