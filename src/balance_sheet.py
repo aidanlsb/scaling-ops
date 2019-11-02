@@ -61,7 +61,7 @@ class BalanceSheet:
         )
 
     def invested_capital(self) -> float:
-        return self.total_assets() - self.current_liabilities()
+        return self.total_assets() - self.current_liabilities() - self.assets.cash
 
 
 # Assets
