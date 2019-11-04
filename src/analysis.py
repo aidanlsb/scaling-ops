@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src.model import Model
 
+# Root path for navigation
 ROOT = str(Path(__file__).parents[1])
 
 

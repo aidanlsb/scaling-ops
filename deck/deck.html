@@ -44,7 +44,8 @@ class: center, middle
 
 ---
 
-# Where: Growth Trajectory
+# Where: ROIC Increasing with Scale
+.center[![:scale 80%](../charts/ROIC_and_growth.png)]
 
 
 ---
@@ -52,14 +53,19 @@ class: center, middle
  
 * All financial data presented in balance sheet and income statement is attributable to the collection unit and not the landfill unit of Waste Wizard
 * Waste pickup is truly "on demand," i.e. every lift is a full bin's worth of waste (Waste Wizard is not able to "lift" a partially full bin and get paid as if it were full)
+* If a truck is deployed, it is deployed for a full shift
 * The "other operating costs" on the P&L are directly attributable to collection activities and scale with the number of trucks in the fleet (e.g. depot operations)
 * New trucks cost $250K, have a useful life of 10 years and a salvage value of $25K
-
+* 
 
     </textarea>
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     </script>
     <script>
+        remark.macros.scale = function (percentage) {
+            var url = this;
+            return '<img src="' + url + '" style="width: ' + percentage + '" />';
+        };
         var slideshow = remark.create();
     </script>
 </body>
