@@ -17,10 +17,11 @@ def gen_data() -> pd.DataFrame:
     model = Model()
     current_customers = model.inputs.num_customers
     customers_3x = current_customers * 3
-    n_customers = range(current_customers, customers_3x, 5000)
+    n_customers = range(current_customers, customers_3x, 500)
     roics = []
     for n in n_customers:
         model.inputs.num_customers = n
+        model.set_trucks()
         r = model.new_roic()
         roics.append(r)
 
@@ -32,7 +33,7 @@ def make_line_chart(df, x, y, title) -> alt.Chart:
         alt.Chart(df)
         .mark_line()
         .encode(x=x, y=y)
-        .properties(title=title, height=300, width=400)
+        .properties(title=title, height=200, width=400)
     )
     return chart
 
